@@ -64,6 +64,9 @@ class ArticleController extends Controller
         $this->render('Backend/articles/index.php', [
             'meta' => [
                 'title' => 'Administration des articles',
+                'scripts' => [
+                    '/js/switchVisibilityArticle.js'
+                ]
             ],
             'articles' => (new article)->findAll(),
         ]);
@@ -115,7 +118,7 @@ class ArticleController extends Controller
         
         $this->render('Backend/articles/edit.php', [
             'meta' => [
-                'title' => 'Modification d\'un article'
+                'title' => 'Modification d\'un article',
             ],
             'form' => $form->createForm(),
             ]);
@@ -144,5 +147,37 @@ class ArticleController extends Controller
         http_response_code(302);
         header('Location: /admin/articles');
         exit();
+    }
+
+
+
+    #[Route('admin.articles.switch', '/admin/articles/([0-9]+)/switch', ['GET'])]
+    public function switch(int $id): void
+    {
+        $article = (new Article())->find($id);
+
+
+        header('Content-type = application/json');
+
+        if ($article) {
+            $article
+            ->setActif(!$article->getActif())
+            ->update();
+            
+            http_response_code(201);
+
+            echo json_encode([
+                'status' => 'success',
+                'visibility' => $article->getActif()
+            ]);
+            exit();
+        } else {
+            http_response_code(404);
+            
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Article non trouvé',
+            ]);
+        }
     }
 }

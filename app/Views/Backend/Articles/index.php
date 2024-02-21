@@ -15,8 +15,8 @@
                         <p class="card-text"><?= $article->getAuthor(); ?> </p>
                         <p class="card-text"><?= $article->getDescription(); ?></p>
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="switch-enable-article-<?= $article->getId(); ?>" <?= $article->getActif() ? 'checked' : null; ?> />
-                            <label class="form-check-label" for="id=" switch-enable-article-<?= $article->getId(); ?>">Actif</label>
+                            <input class="form-check-input" type="checkbox" id="switch-enable-article-<?= $article->getId(); ?>" <?= $article->getActif() ? 'checked' : null; ?> data-switch-article-id="<?= $article->getId(); ?>" />
+                            <label class="form-check-label" for="switch-enable-article-<?= $article->getId(); ?>">Actif</label>
                         </div>
 
                         <div class="d-flex justify-content-between flex-wrap">
