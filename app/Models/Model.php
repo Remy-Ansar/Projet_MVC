@@ -204,4 +204,30 @@ abstract class Model extends Db
 
         return $this;
     }
+
+    public function uploadImage(array $image): ?string
+    {
+        if($image['size'] < 10000000 && $image['error'] === 0) {
+            $fileInfo = pathinfo($image['name']);
+
+            $extensionAllowed = ['jpg','jpeg','webp','gif','svg','png'];
+            $extension = $fileInfo['extension'];
+
+            if(in_array($extension, $extensionAllowed)) {
+                if(!is_dir(ROOT . "/public/images/$this->table")) {
+                    mkdir(ROOT . "/public/images/$this->table");
+                }
+
+                $imageName = $fileInfo['basename'] . (new DateTime())->format('Y-m-d_H_i_s') . '.' . $extension;
+
+                move_uploaded_file(
+                    $image['tmp_name'],
+                    ROOT . "/public/images/$this->table/$imageName",
+                );
+                return $imageName;
+            }
+        }
+
+        return null;
+    }
 }

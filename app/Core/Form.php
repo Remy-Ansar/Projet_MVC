@@ -144,4 +144,13 @@ abstract class Form
         
         return $this;
     }
+
+    public function addImage(string $src, array $attributs = []): self 
+    {
+        $this->formCode .= "<img src=\"$src\"";
+
+        $this->formCode .= $attributs ? $this->addAttributs($attributs) . '>' : '>';
+
+        return $this;
+    }
 }

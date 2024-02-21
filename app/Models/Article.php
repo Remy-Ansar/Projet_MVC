@@ -16,6 +16,7 @@ class Article extends Model
         protected ?DateTime $updatedAt = null,
         protected ?bool $actif = null,
         protected ?int $userId = null,
+        protected ?string $imageName = null,
     ) {
         $this->table = 'articles';
     }
@@ -204,5 +205,28 @@ class Article extends Model
                 return $this;
         }
 
-      
+
+        /**
+         * Get the value of imageName
+         *
+         * @return ?string
+         */
+        public function getImageName(): ?string
+        {
+                return $this->imageName;
+        }
+
+        /**
+         * Set the value of imageName
+         *
+         * @param ?string $imageName
+         *
+         * @return self
+         */
+        public function setImageName(?string $imageName): self
+        {
+                $this->imageName = $imageName;
+
+                return $this;
+        }
 }
