@@ -44,7 +44,7 @@ class ArticleForm extends Form
         ->addImage($article && $article->getImageName() ? "/images/articles/{$article->getimageName()}" : '', [
             'class' => "img-fluid rounded mt-2",
             'loading' => "lazy",
-            'alt' => $article ? $article->getTitre() : '',
+            // 'alt' => $article ? $article->getTitre() : '',
         ])
         ->endDiv()
         ->startDiv(['class' => 'mb-3'])
