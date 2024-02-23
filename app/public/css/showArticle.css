@@ -1,0 +1,19 @@
+.banner-hero {
+    width: 100%;
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.banner-title {
+    padding: 0.5em 1em;
+    border-radius: var(--bs-border-radius);
+    border:whitesmoke;
+    box-shadow: 2px 2px 3px black;
+    background: rgba(var(--bs-primary-rgb), 0.4);
+    color: whitesmoke;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}

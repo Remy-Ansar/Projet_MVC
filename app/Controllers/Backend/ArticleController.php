@@ -2,15 +2,34 @@
 
 namespace App\Controllers\Backend;
 
-use App\Core\Route;
-use App\Models\Article;
-use App\Form\ArticleForm;
 use App\Core\Controller;
+use App\Core\Route;
+use App\Form\ArticleForm;
+use App\Models\Article;
+use App\Models\Categorie;
 use DateTime;
 
 class ArticleController extends Controller
 {
-    #[Route('app.articles.create', '/admin/articles/create', ['GET', 'POST'])]
+    #[Route('admin.articles.index', '/admin/articles', ['GET'])]
+    public function index(): void
+    {
+        $this->isAdmin();
+
+        $_SESSION['token'] = bin2hex(random_bytes(50));
+
+        $this->render('Backend/Articles/index.php', [
+            'articles' => (new Article)->findAll(),
+            'meta' => [
+                'title' => "Administration des articles",
+                'scripts' => [
+                    '/js/switchVisibilityArticle.js',
+                ]
+            ],
+        ]);
+    }
+
+    #[Route('admin.articles.create', '/admin/articles/create', ['GET', 'POST'])]
     public function create(): void
     {
         $this->isAdmin();
@@ -22,6 +41,7 @@ class ArticleController extends Controller
             $description = strip_tags($_POST['description']);
             $actif = isset($_POST['actif']) ? true : false;
             $imageName = !empty($_FILES['image']) ? (new Article)->uploadImage($_FILES['image']) : null;
+            $categoriesId = $_POST['categoriesId'];
 
             $article = (new Article)->findOneByTitre($titre);
 
@@ -32,6 +52,7 @@ class ArticleController extends Controller
                     ->setActif($actif)
                     ->setUserId($_SESSION['LOGGED_USER']['id'])
                     ->setImageName($imageName)
+                    ->setCategoriesId($categoriesId)
                     ->create();
 
                 $_SESSION['messages']['success'] = "Article créé avec succès";
@@ -43,32 +64,11 @@ class ArticleController extends Controller
             }
         }
 
-
         $this->render('Backend/Articles/create.php', [
             'meta' => [
-                'title' => 'Création d\un article',
+                'title' => 'Création d\'un article',
             ],
             'form' => $form->createForm()
-        ]);
-    }
-
-    #[Route('admin.articles.index', '/admin/articles', ['GET'])]
-    public function index(): void
-    {
-        $this->isAdmin();
-
-
-
-        $_SESSION['token'] = bin2hex(random_bytes(50));
-
-        $this->render('Backend/articles/index.php', [
-            'meta' => [
-                'title' => 'Administration des articles',
-                'scripts' => [
-                    '/js/switchVisibilityArticle.js'
-                ]
-            ],
-            'articles' => (new article)->findAll(),
         ]);
     }
 
@@ -80,7 +80,7 @@ class ArticleController extends Controller
         $article = (new Article)->find($id);
 
         if (!$article) {
-            $_SESSION['messages']['danger'] = "article non trouvé";
+            $_SESSION['messages']['danger'] = "Article non trouvé";
 
             http_response_code(302);
             header('Location: /admin/articles');
@@ -92,40 +92,41 @@ class ArticleController extends Controller
         if ($form->validate(['titre', 'description'], $_POST)) {
             $titre = strip_tags($_POST['titre']);
             $description = strip_tags($_POST['description']);
-            $actif = isset($_POST['actif']) ? true : false;         
+            $actif = isset($_POST['actif']) ? true : false;
             $imageName = !empty($_FILES['image']) ? (new Article)->uploadImage($_FILES['image']) : null;
-
+            $categoriesId = $_POST['categoriesId'];
+            
             $oldTitre = $article->getTitre();
 
-                if ($oldTitre !== $titre && (new article)->findOneByTitre($titre)) {
-                    $_SESSION['messages']['danger'] = "Le titre est déjà utilisé par un autre article";
-                } else {
-                    $article
-                        ->setTitre($titre)
-                        ->setDescription($description)
-                        ->setActif($actif)
-                        ->setUpdatedAt(new DateTime())
-                        ->setImageName($imageName)
-                        ->update();
+            if ($oldTitre !== $titre && (new Article)->findOneByTitre($titre)) {
+                $_SESSION['messages']['danger'] = "Le titre est déjà utilisé par un autre article";
+            } else {
+                $article
+                    ->setTitre($titre)
+                    ->setDescription($description)
+                    ->setActif($actif)
+                    ->setUpdatedAt(new DateTime())
+                    ->setImageName($imageName)
+                    ->setCategoriesId($categoriesId)
+                    ->update();
 
-                    $_SESSION['messages']['success'] = "Article mis à jour avec succès";
+                $_SESSION['messages']['success'] = "Article mis à jour avec succès";
 
-                    http_response_code(302);
-                    header('Location: /admin/articles');
-                    exit();
-                }
+                http_response_code(302);
+                header('Location: /admin/articles');
+                exit();
             }
-        
-        $this->render('Backend/articles/edit.php', [
+        }
+
+        $this->render('Backend/Articles/edit.php', [
             'meta' => [
                 'title' => 'Modification d\'un article',
             ],
-            'form' => $form->createForm(),
-            ]);
-        
+            'form' => $form->createForm()
+        ]);
     }
 
-    #[Route('Admin.articles.delete', '/admin/articles/([0-9]+)/delete', ['POST'])]
+    #[Route('admin.articles.delete', '/admin/articles/([0-9]+)/delete', ['POST'])]
     public function delete(int $id): void
     {
         $this->isAdmin();
@@ -133,13 +134,13 @@ class ArticleController extends Controller
         $article = (new Article)->find($id);
 
         if ($article) {
-            if(hash_equals($_SESSION['token'], $_POST['token'])) {
-            $article->delete();
+            if (hash_equals($_SESSION['token'], $_POST['token'])) {
+                $article->delete();
 
-            $_SESSION['messages']['success'] = "Article supprimé avec succès";
+                $_SESSION['messages']['success'] = "Article supprimé avec succès";
             } else {
                 $_SESSION['messages']['danger'] = "Token CSRF invalide";
-            } 
+            }
         } else {
             $_SESSION['messages']['danger'] = "Article non trouvé";
         }
@@ -149,21 +150,18 @@ class ArticleController extends Controller
         exit();
     }
 
-
-
     #[Route('admin.articles.switch', '/admin/articles/([0-9]+)/switch', ['GET'])]
     public function switch(int $id): void
     {
         $article = (new Article())->find($id);
 
-
-        header('Content-type = application/json');
+        header('Content-Type: application/json');
 
         if ($article) {
             $article
-            ->setActif(!$article->getActif())
-            ->update();
-            
+                ->setActif(!$article->getActif())
+                ->update();
+
             http_response_code(201);
 
             echo json_encode([
@@ -173,11 +171,12 @@ class ArticleController extends Controller
             exit();
         } else {
             http_response_code(404);
-            
+
             echo json_encode([
                 'status' => 'error',
                 'message' => 'Article non trouvé',
             ]);
+            exit();
         }
     }
 }

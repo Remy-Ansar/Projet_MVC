@@ -1,10 +1,11 @@
-const inputs = document.querySelectorAll('input[data-switch-article-id]');
+const inputs = document.querySelectorAll('input[data-switch-categorie-id]');
 
 inputs.forEach((item) => {
     item.addEventListener('change', async (e) => {
-        const id = e.currentTarget.dataset.switchArticleId
+        const id = e.currentTarget.dataset.switchCategorieId
+        console.error(id);
 
-        const response = await fetch(`/admin/articles/${id}/switch`);
+        const response = await fetch(`/admin/categories/${id}/switch`);
 
         if (response.ok) {
             const data = await response.json();

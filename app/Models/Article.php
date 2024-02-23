@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use DateTime;
-use App\Models\Model;
-
 
 class Article extends Model
 {
@@ -17,28 +15,56 @@ class Article extends Model
         protected ?bool $actif = null,
         protected ?int $userId = null,
         protected ?string $imageName = null,
+        protected ?int $categoriesId = null,
     ) {
         $this->table = 'articles';
     }
 
-    public function findOneByTitre(string $titre): self|bool 
+    public function findOneByTitre(string $titre): self|bool
     {
         return $this->fetchHydrate(
-            $this->runQuery("SELECT * FROM $this->table WHERE titre = :titre", ['titre' =>$titre])->fetch()
+            $this->runQuery("SELECT * FROM $this->table WHERE titre = :titre", ['titre' => $titre])->fetch()
         );
     }
 
+    public function findOneActifById(int $id): bool|self
+    {
+        return $this->fetchHydrate(
+            $this->runQuery("SELECT * FROM $this->table WHERE actif = true AND id = :id", ['id' => $id])->fetch()
+        );
+    }
 
+    public function findLatestByActif(bool $actif = true): array
+    {
+        return $this->fetchHydrate(
+            $this->runQuery("SELECT * FROM $this->table WHERE actif = :actif ORDER BY createdAt DESC", ['actif' => $actif])->fetchAll()
+        );
+    }
 
     public function getAuthor(): string
     {
-        $user = $this->runQuery("SELECT u.nom, u.prenom FROM $this->table a JOIN users u ON a.userId = u.id WHERE a.id = :articleId",
-    ['articleId' => $this->id])->fetch();
+        $user = $this->runQuery(
+            "SELECT u.nom, u.prenom FROM $this->table a JOIN users u ON a.userId = u.id WHERE a.id = :articleId",
+            ['articleId' => $this->id]
+        )->fetch();
 
         return "$user->prenom $user->nom";
-}
+    }
 
-     /* Get the value of id
+    public function getCategories(): string
+    {
+        $titre = $this->runQuery(
+            "SELECT c.titre FROM $this->table c JOIN articles a ON a.categoriesId = c.id WHERE a.id = :categoriesId",
+            ['categoriesId' => $this->id]
+        )->fetch();
+
+        return "$titre->titre";
+    }
+
+    
+
+    /**
+     * Get the value of id
      *
      * @return ?int
      */
@@ -181,51 +207,74 @@ class Article extends Model
         return $this;
     }
 
+    /**
+     * Get the value of userId
+     *
+     * @return ?int
+     */
+    public function getUserId(): ?int
+    {
+        return $this->userId;
+    }
+
+    /**
+     * Set the value of userId
+     *
+     * @param ?int $userId
+     *
+     * @return self
+     */
+    public function setUserId(?int $userId): self
+    {
+        $this->userId = $userId;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of imageName
+     *
+     * @return ?string
+     */
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    /**
+     * Set the value of imageName
+     *
+     * @param ?string $imageName
+     *
+     * @return self
+     */
+    public function setImageName(?string $imageName): self
+    {
+        $this->imageName = $imageName;
+
+        return $this;
+    }
+
         /**
-         * Get the value of userId
+         * Get the value of categoriesId
          *
          * @return ?int
          */
-        public function getUserId(): ?int
+        public function getCategoriesId(): ?int
         {
-                return $this->userId;
+                return $this->categoriesId;
         }
 
         /**
-         * Set the value of userId
+         * Set the value of categoriesId
          *
-         * @param ?int $userId
+         * @param ?int $categoriesId
          *
          * @return self
          */
-        public function setUserId(?int $userId): self
+        public function setCategoriesId(?int $categoriesId): self
         {
-                $this->userId = $userId;
-
-                return $this;
-        }
-
-
-        /**
-         * Get the value of imageName
-         *
-         * @return ?string
-         */
-        public function getImageName(): ?string
-        {
-                return $this->imageName;
-        }
-
-        /**
-         * Set the value of imageName
-         *
-         * @param ?string $imageName
-         *
-         * @return self
-         */
-        public function setImageName(?string $imageName): self
-        {
-                $this->imageName = $imageName;
+                $this->categoriesId = $categoriesId;
 
                 return $this;
         }

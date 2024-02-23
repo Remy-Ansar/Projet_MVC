@@ -9,34 +9,27 @@
                         <a class="nav-link" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Articles</a>
+                        <a class="nav-link" href="/articles">Articles</a>
                     </li>
                 </ul>
-                
                 <ul class="navbar-nav ms-auto">
                     <?php if (!empty($_SESSION['LOGGED_USER'])) : ?>
-                        <?php if(in_array('ROLE_ADMIN',$_SESSION['LOGGED_USER']['roles'])): ?>
+                        <?php if (in_array('ROLE_ADMIN', $_SESSION['LOGGED_USER']['roles'])) : ?>
                             <li class="nav-item me-2">
                                 <div class="dropdown">
-                                    <button
-                                        class="btn btn-secondary dropdown-toggle"
-                                        type="button"
-                                        id="triggerId"
-                                        data-bs-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false"
-                                    >
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="triggerId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Admin
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="triggerId">
                                         <a class="dropdown-item" href="/admin/users">Users</a>
                                         <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="/admin/articles">Articles</a>                                        
+                                        <a class="dropdown-item" href="/admin/articles">Articles</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="/admin/categories">Catégories</a>
                                     </div>
                                 </div>
-                                
                             </li>
-                            <?php endif;?>
+                        <?php endif; ?>
                         <li class="nav-item">
                             <a href="/logout" class="btn btn-danger">Deconnexion</a>
                         </li>

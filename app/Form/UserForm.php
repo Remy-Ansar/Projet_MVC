@@ -53,7 +53,6 @@ class UserForm extends Form
             ])
             ->endDiv();
 
-
         if ($user) {
             $this
                 ->startDiv(['class' => 'mb-3'])
@@ -68,7 +67,7 @@ class UserForm extends Form
                             ]
                         ],
                         'ROLE_EDITOR' => [
-                            'label' => 'Editeur',
+                            'label' => 'Éditeur',
                             'attributs' => [
                                 'selected' => in_array('ROLE_EDITOR', $user->getRoles()) ? true : false,
                             ]
@@ -78,14 +77,13 @@ class UserForm extends Form
                             'attributs' => [
                                 'selected' => in_array('ROLE_ADMIN', $user->getRoles()) ? true : false,
                             ]
-                        ],
+                        ]
                     ],
                     [
                         'class' => 'form-control',
                         'id' => 'roles[]',
                         'multiple' => true,
                     ]
-
                 )
                 ->endDiv();
         }

@@ -71,6 +71,45 @@ abstract class Form
         return $this;
     }
 
+    public function addSelect(string $name, array $choices, array $attributs = []): self
+    {
+        $this->formCode .= "<select name=\"$name\"";
+
+        $this->formCode .= $attributs ? $this->addAttributs($attributs) . '>' : '>';
+
+        foreach ($choices as $value => $info) {
+            $this->formCode .= "<option value=\"$value\"";
+
+            $this->formCode .= isset($info['attributs']) ? $this->addAttributs($info['attributs']) . '>' : '>';
+
+            $this->formCode .= "$info[label]</option>";
+        }
+
+        $this->formCode .= "</select>";
+
+        return $this;
+    }
+
+    public function addTextarea(string $name, ?string $value = null, array $attributs = []): self
+    {
+        $this->formCode .= "<textarea name=\"$name\"";
+
+        $this->formCode .= $attributs ? $this->addAttributs($attributs) . '>' : '>';
+
+        $this->formCode .= "$value</textarea>";
+
+        return $this;
+    }
+
+    public function addImage(string $src, array $attributs = []): self
+    {
+        $this->formCode .= "<img src=\"$src\"";
+
+        $this->formCode .= $attributs ? $this->addAttributs($attributs) . '/>' : '/>';
+
+        return $this;
+    }
+
     /**
      * Permet d'ajouter des attributs HTML sur des éléments HTML
      * 
@@ -87,10 +126,9 @@ abstract class Form
 
         // On boucle sur les attributs HTML du tableau
         foreach ($attributs as $name => $value) {
-
             if (in_array($name, $courts) && $value) {
                 $str .= " $name";
-            } else if($value) {
+            } else if ($value) {
                 $str .= " $name=\"$value\"";
             }
         }
@@ -113,44 +151,5 @@ abstract class Form
     public function createForm(): string
     {
         return $this->formCode;
-    }
-
-    public function addSelect(string $name, array $choices, array $attributs = []): self
-    {
-        $this->formCode .= "<select name=\"$name\"";
-        
-        $this->formCode .= $attributs ? $this->addAttributs($attributs) . '>' : '>';
-
-        foreach($choices as $value => $info) {
-            $this->formCode .= "<option value=\"$value\"";
-
-            $this->formCode .= isset($info['attributs']) ? $this->addAttributs($info['attributs']) . '>' : '>' ;
-
-            $this->formCode .= "$info[label]</option>";
-        }
-
-        $this->formCode .= "</select>";
-
-        return $this;
-    }
-
-    public function addTextArea(string $name, ?string $value = null, array $attributs = []): self
-    {
-        $this->formCode .= "<textarea name=\"$name\"";
-
-        $this->formCode .= $attributs ? $this->addAttributs($attributs) . '>' : '>';
-
-        $this->formCode .= "$value</textarea>";
-        
-        return $this;
-    }
-
-    public function addImage(string $src, array $attributs = []): self 
-    {
-        $this->formCode .= "<img src=\"$src\"";
-
-        $this->formCode .= $attributs ? $this->addAttributs($attributs) . '>' : '>';
-
-        return $this;
     }
 }

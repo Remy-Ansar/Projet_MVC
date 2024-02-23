@@ -80,11 +80,11 @@ abstract class Model extends Db
 
                 if (is_array($value)) {
                     $valeurs[$key] = json_encode($value);
-                } else if ($value instanceof DateTime) {
+                } elseif ($value instanceof DateTime) {
                     $valeurs[$key] = $value->format('Y-m-d H:i:s');
-                }else if (is_bool($value)) {
+                } elseif (is_bool($value)) {
                     $valeurs[$key] = (int) $value;
-                }else {
+                } else {
                     $valeurs[$key] = $value;
                 }
             }
@@ -108,11 +108,14 @@ abstract class Model extends Db
 
                 if (is_array($value)) {
                     $valeurs[$key] = json_encode($value);
-                } else if ($value instanceof DateTime) {
+                } elseif ($value instanceof DateTime) {
                     $valeurs[$key] = $value->format('Y-m-d H:i:s');
-                }else if (is_bool($value)) {
+                } elseif (is_bool($value)) {
                     $valeurs[$key] = (int) $value;
-                }else {
+                } elseif (is_int($value)) {
+                    $valeurs[$key] = (string) $value;
+                }
+                else {
                     $valeurs[$key] = $value;
                 }
             }
@@ -128,8 +131,6 @@ abstract class Model extends Db
         return $this->runQuery("UPDATE $this->table SET $strChamp WHERE id = :id", $valeurs);
     }
 
-
-
     public function delete(): PDOStatement|bool
     {
         // DELETE FROM users WHERE id = :id
@@ -138,9 +139,6 @@ abstract class Model extends Db
          */
         return $this->runQuery("DELETE FROM $this->table WHERE id = :id", ['id' => $this->id]);
     }
-
-
-
 
     /**
      * Function pour exécuter n'importe quelle requêtes SQL
@@ -194,10 +192,9 @@ abstract class Model extends Db
 
             if ($key === 'roles') {
                 $this->$setter($value ? json_decode($value) : null);
-            } else if ($key === 'createdAt' || $key === 'updatedAt' && $value) {
+            } elseif ($key === 'createdAt' || $key === 'updatedAt' && $value) {
                 $this->$setter(new DateTime($value));
-            }
-            else {
+            } else {
                 $this->$setter($value);
             }
         }
@@ -207,14 +204,14 @@ abstract class Model extends Db
 
     public function uploadImage(array $image): ?string
     {
-        if($image['size'] < 10000000 && $image['error'] === 0) {
+        if ($image['size'] < 10000000 &&  $image['error'] === 0) {
             $fileInfo = pathinfo($image['name']);
 
-            $extensionAllowed = ['jpg','jpeg','webp','gif','svg','png'];
+            $extensionAllowed = ['jpg', 'jpeg', 'webp', 'gif', 'svg', 'png'];
             $extension = $fileInfo['extension'];
 
-            if(in_array($extension, $extensionAllowed)) {
-                if(!is_dir(ROOT . "/public/images/$this->table")) {
+            if (in_array($extension, $extensionAllowed)) {
+                if (!is_dir(ROOT . "/public/images/$this->table")) {
                     mkdir(ROOT . "/public/images/$this->table");
                 }
 
@@ -224,6 +221,7 @@ abstract class Model extends Db
                     $image['tmp_name'],
                     ROOT . "/public/images/$this->table/$imageName",
                 );
+
                 return $imageName;
             }
         }

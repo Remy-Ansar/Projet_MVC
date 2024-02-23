@@ -25,91 +25,85 @@ class UserController extends Controller
             'users' => $users,
         ]);
     }
+
     #[Route('admin.users.edit', '/admin/users/([0-9]+)/edit', ['GET', 'POST'])]
     public function edit(int $id): void
     {
         $this->isAdmin();
-        /**
-         * @var User|bool $user
-         */
-      $user = (new User)->find($id);
 
-      if(!$user) {
-        $_SESSION['messages']['danger'] = "Utilisateur non trouvé";
+        $user = (new User)->find($id);
 
-        http_response_code(302);
-        header('Location: /admin/users');
-        exit();
-      }
-
-      $form = new UserForm($_SERVER['REQUEST_URI'], $user);
-
-      if($form->validate(['nom','prenom','email'], $_POST)) {
-        $nom = strip_tags($_POST['nom']);
-        $prenom = strip_tags($_POST['prenom']);
-        $email = filter_input(INPUT_POST,'email', FILTER_SANITIZE_EMAIL);
-        $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_ARGON2I) :null;
-        $roles = $_POST['roles'];
-
-        if($email) {
-            $oldEmail = $user->getEmail();
-
-            if ($oldEmail !== $email && !(new User)->findOneByEmail($email)) {
-                $_SESSION['messages']['danger'] = "Cet email est déjà utilisé par un autre compte";
-            } else {
-                $user
-                ->setPrenom($prenom)
-                ->setNom($nom)
-                ->setEmail($email)
-                ->setPassword($password)
-                ->setRoles($roles)
-                ->update();
-
-            $_SESSION['messages']['success'] = "Utilisateur mis à jour avec succès";
+        if (!$user) {
+            $_SESSION['messages']['danger'] = "Utilisateur non trouvé";
 
             http_response_code(302);
             header('Location: /admin/users');
             exit();
-            }
-
-        } else {
-            $_SESSION['messages']['danger'] = "Veuillez renseigner un email valide";
         }
-      }
 
-      $this->render('Backend/Users/edit.php', [
-        'meta' => [
-            'title' => 'Modification d\'un user'
-        ],
-        'form' => $form->createForm(),
+        $form = new UserForm($_SERVER['REQUEST_URI'], $user);
+
+        if ($form->validate(['nom', 'prenom', 'email'], $_POST)) {
+            $nom = strip_tags($_POST['nom']);
+            $prenom = strip_tags($_POST['prenom']);
+            $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+            $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_ARGON2I) : null;
+            $roles = $_POST['roles'];
+
+            if ($email) {
+                $oldEmail = $user->getEmail();
+
+                if ($oldEmail !== $email && (new User)->findOneByEmail($email)) {
+                    $_SESSION['messages']['danger'] = "Cet email est déjà utilisé par un autre compte";
+                } else {
+                    $user
+                        ->setPrenom($prenom)
+                        ->setNom($nom)
+                        ->setEmail($email)
+                        ->setPassword($password)
+                        ->setRoles($roles)
+                        ->update();
+
+                    $_SESSION['messages']['success'] = "Utilisateur mis à jour avec succès";
+
+                    http_response_code(302);
+                    header('Location: /admin/users');
+                    exit();
+                }
+            } else {
+                $_SESSION['messages']['danger'] = "Veuillez renseigner un email valide";
+            }
+        }
+
+        $this->render('Backend/Users/edit.php', [
+            'meta' => [
+                'title' =>  'Modification d\'un user',
+            ],
+            'form' => $form->createForm(),
         ]);
     }
 
-
-     #[Route('Admin.users.delete', '/admin/users/([0-9]+)/delete', ['POST'])]
-    public function delete(int $id): void 
+    #[Route('admin.users.delete', '/admin/users/([0-9]+)/delete', ['POST'])]
+    public function delete(int $id): void
     {
         $this->isAdmin();
 
-        /**
-         * @var User|bool $user
-         */
-      $user = (new User)->find($id);
+        $user = (new User)->find($id);
 
-      if ($user) {
-        if(hash_equals($_SESSION['token'], $_POST['token'])) {
-            $user->delete();
+        if ($user) {
+            if (hash_equals($_SESSION['token'], $_POST['token'])) {
+                $user->delete();
 
-            $_SESSION['messages']['success'] = "Utilisateur supprimé avec succès";
+                $_SESSION['messages']['success'] = "Utilisateur supprimé avec succès";
+            } else {
+                $_SESSION['messages']['danger'] = "Token CSRF invalide";
+            }
         } else {
-            $_SESSION['messages']['danger'] = "Token CSRF invalide";
+            $_SESSION['messages']['danger'] = "Utilisateur non trouvé";
         }
-      } else {
-        $_SESSION['messages']['danger'] = "Utilisateur non trouvé";
-      }
 
-      http_response_code(302);
-      header('Location: /admin/users');
-      exit();
+        http_response_code(302);
+        header('Location: /admin/users');
+        exit();
     }
 }
