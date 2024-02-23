@@ -34,12 +34,35 @@ class Categorie extends Model
         );
     }
 
-    // public function findOneByCategorie(string $titre): self|bool
-    // {
-    //     return $this->fetchHydrate(
-    //         $this->runQuery("SELECT * FROM $this->table WHERE titre =:titre", ['titre' =>$titre])->fetch()
-    //     );
-    // }
+    public function findOneByCategorie(string $titre): self|bool
+    {
+        return $this->fetchHydrate(
+            $this->runQuery("SELECT * FROM $this->table WHERE titre =:titre", ['titre' =>$titre])->fetch()
+        );
+    }
+
+    public function findAllForSelect(?Article $article = null): array
+    {
+        $categories = $this->findAll();
+
+        $choices = [];
+        $choices [0] = [
+                'label' => 'Sélectionner une catégorie',
+                'attributs' => [
+                        'selected' => !$article ? true : false,
+                        'disabled' => true,
+                ]
+                ];
+        foreach($categories as $categorie) {
+                $choices[$categorie->getId()] = [
+                        'label' => $categorie->getTitre(),
+                        'attributs' => [
+                        'selected' => $article && $article->getCategoriesId() === $categorie->getId() ? true : false,
+                        ],
+                ];
+        }
+        return $choices;
+    }
 
     public function findLatestByActif(bool $actif = true): array
     {

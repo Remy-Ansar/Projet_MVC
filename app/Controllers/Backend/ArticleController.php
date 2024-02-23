@@ -41,7 +41,7 @@ class ArticleController extends Controller
             $description = strip_tags($_POST['description']);
             $actif = isset($_POST['actif']) ? true : false;
             $imageName = !empty($_FILES['image']) ? (new Article)->uploadImage($_FILES['image']) : null;
-            $categoriesId = $_POST['categoriesId'];
+            $categoriesId = (int) $_POST['categories'] > 0 ? (int) $_POST['categories'] : null;
 
             $article = (new Article)->findOneByTitre($titre);
 
@@ -94,7 +94,7 @@ class ArticleController extends Controller
             $description = strip_tags($_POST['description']);
             $actif = isset($_POST['actif']) ? true : false;
             $imageName = !empty($_FILES['image']) ? (new Article)->uploadImage($_FILES['image']) : null;
-            $categoriesId = $_POST['categoriesId'];
+            $categoriesId = (int) $_POST['categories'] > 0 ? (int) $_POST['categories'] : null;
             
             $oldTitre = $article->getTitre();
 

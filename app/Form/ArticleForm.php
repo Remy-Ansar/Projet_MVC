@@ -48,32 +48,13 @@ class ArticleForm extends Form
             ->endDiv()
 
            
-                    // ->startDiv(['class' => 'mb-3'])
-                    // ->addLabel('categories', 'Catégories:', ['class' => 'form-label'])
-                    // ->addSelect(
-                    //     'categoriesId',
-                    //     [
-                           
-                    //         'MVC' => [
-                    //             'label' => 'MVC',
-                    //             'attributs' => [
-                                    
-                    //             ]
-                    //         ],
-                    //         'Procédural' => [
-                    //             'label' => 'Procédural',
-                    //             'attributs' => [
-                                    
-                    //             ]
-                    //         ]
-                    //     ],
-                    //     [
-                    //         'class' => 'form-control',
-                    //         'id' => 'categoriesId[]',
-                    //         'multiple' => true,
-                    //     ]
-                    // )
-                    // ->endDiv()
+                    ->startDiv(['class' => 'mb-3'])
+                    ->addLabel('categorie', 'Catégorie:', ['class' => 'form-label'])
+                    ->addSelect(
+                        'categories', (new Categorie)->findAllForSelect($article),
+                        ['class' => 'form-control', 'id' => 'categorie']
+                    )
+                    ->endDiv()
             
     
             
