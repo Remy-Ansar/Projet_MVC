@@ -11,6 +11,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/articles">Articles</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/produits">Produits</a>
+                    </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <?php if (!empty($_SESSION['LOGGED_USER'])) : ?>
@@ -26,6 +29,8 @@
                                         <a class="dropdown-item" href="/admin/articles">Articles</a>
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="/admin/categories">Catégories</a>
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="/admin/produits">Produits</a>
                                     </div>
                                 </div>
                             </li>

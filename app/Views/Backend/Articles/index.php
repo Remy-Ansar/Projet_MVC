@@ -13,7 +13,7 @@
                         <em class="card-text"><?= $article->getCreatedAt()->format('Y/m/d'); ?></em>
                         <p class="card-text"><?= $article->getAuthor(); ?></p>
                         <p class="card-text"><?= $article->getDescription(); ?></p>
-
+                        <p class="card-text <?= $article->getCategorie() ? 'badge bg-primary' : null ?>"><?= $article->getCategorie(); ?></p>
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="switch-enable-article-<?= $article->getId(); ?>" <?= $article->getActif() ? 'checked' : null; ?> data-switch-article-id="<?= $article->getId(); ?>" />
                             <label class="form-check-label" for="switch-enable-article-<?= $article->getId(); ?>">Actif</label>

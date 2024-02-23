@@ -51,14 +51,14 @@ class Article extends Model
         return "$user->prenom $user->nom";
     }
 
-    public function getCategories(): string
+    public function getCategorie(): ?string
     {
-        $titre = $this->runQuery(
-            "SELECT c.titre FROM $this->table c JOIN articles a ON a.categoriesId = c.id WHERE a.id = :categoriesId",
-            ['categoriesId' => $this->id]
+        $categorie = $this->runQuery(
+            "SELECT c.titre FROM $this->table a JOIN categories c ON a.categoriesId = c.id WHERE a.id = :articleId",
+            ['articleId' => $this->id]
         )->fetch();
 
-        return "$titre->titre";
+        return "$categorie->titre";
     }
 
     

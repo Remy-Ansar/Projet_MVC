@@ -8,7 +8,7 @@ use App\Models\Categorie;
 
 class ArticleForm extends Form
 {
-    public function __construct(string $action, ?Article $article = null, ?Categorie $categorie = null)
+    public function __construct(string $action, ?Article $article = null)
     {
         $this
             ->startForm($action, 'POST', [
@@ -48,13 +48,13 @@ class ArticleForm extends Form
             ->endDiv()
 
            
-                    ->startDiv(['class' => 'mb-3'])
-                    ->addLabel('categorie', 'Catégorie:', ['class' => 'form-label'])
-                    ->addSelect(
-                        'categories', (new Categorie)->findAllForSelect($article),
-                        ['class' => 'form-control', 'id' => 'categorie']
-                    )
-                    ->endDiv()
+            ->startDiv(['class' => 'mb-3'])
+            ->addLabel('categorie', 'Catégorie:', ['class' => 'form-label'])
+            ->addSelect(
+                'categories', (new Categorie)->findAllForSelect($article),
+                ['class' => 'form-control', 'id' => 'categorie']
+            )
+            ->endDiv()
             
     
             

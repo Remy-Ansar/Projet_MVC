@@ -41,15 +41,16 @@ class Categorie extends Model
         );
     }
 
-    public function findAllForSelect(?Article $article = null): array
+    public function findAllForSelect(null|Article|Produit $object = null): array
     {
         $categories = $this->findAll();
 
         $choices = [];
+
         $choices [0] = [
                 'label' => 'Sélectionner une catégorie',
                 'attributs' => [
-                        'selected' => !$article ? true : false,
+                        'selected' => !$object ? true : false,
                         'disabled' => true,
                 ]
                 ];
@@ -57,7 +58,7 @@ class Categorie extends Model
                 $choices[$categorie->getId()] = [
                         'label' => $categorie->getTitre(),
                         'attributs' => [
-                        'selected' => $article && $article->getCategoriesId() === $categorie->getId() ? true : false,
+                        'selected' => $object && $object->getCategoriesId() === $categorie->getId() ? true : false,
                         ],
                 ];
         }
